@@ -13,13 +13,17 @@ echo_error(){
 path=''
 appName=''
 error=false
-while getopts ':n:p:' flag; do
+railsParams=''
+while getopts ':n:p:o:' flag; do
   case $flag in 
     n) 
       appName=$OPTARG
       ;;
     p) 
       path=$OPTARG
+      ;;
+    o) 
+      railsParams=$OPTARG
       ;;
     *) 
       echo_error "Arg '$OPTARG' not exist" 
@@ -51,7 +55,7 @@ echo_with_color "=== Create rails app in '$path' with name: $appName"
 fullPath=$path/$appName
 set -x
 mkdir $fullPath
-docker run --name $appName -v $fullPath:/var/app/$appName -w /var/app -ti ruby:2.4 /bin/bash -c "gem install rails; rails new $appName --api"
+docker run --name $appName -v $fullPath:/var/app/$appName -w /var/app -ti ruby:2.4 /bin/bash -c "gem install rails; rails new $appName $railsParams"
 docker rm -f $(docker ps -aq --filter "name=$appName")
 set +x
 
@@ -69,6 +73,6 @@ echo_with_color "=== Set database.yml config and update Gemfile"
 set -x
 cp ./rails-config/database.yml $fullPath/config/
 cd $fullPath 
-sed -i -e 's/sqlite3/pg/' Gemfile
+sed -i .old -e 's/sqlite3/pg/' Gemfile
 docker-compose -p $appName -f docker-compose.yml up --build -d
 set +x
