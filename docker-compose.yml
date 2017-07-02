@@ -15,7 +15,7 @@ services:
       dockerfile: docker-config/rails/Dockerfile
 
     command: >
-      bash -c "bundle install & bundle exec rake db:migrate & bundle exec rake db:migrate RAILS_ENV=test & bundle exec puma -C config/puma.rb"
+      bash -c "bundle install && bundle exec rake db:migrate && bundle exec rake db:migrate RAILS_ENV=test && bundle exec puma -C config/puma.rb"
     environment:
       - RAILS_ENV=development
     volumes:
